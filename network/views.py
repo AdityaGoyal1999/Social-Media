@@ -74,7 +74,10 @@ def create_post(request):
 
     return HttpResponse("Your post has been created")
 
+
 def posts(request):
     user = User.objects.filter(username=request.session['username']).first()
-    print(posts, "\n\n\n")
+    # Should change this with foreign keys
+    posts = Post.objects.filter(publisher=user)
+    print(posts, "\n\n")
     return HttpResponse("In the shell")
