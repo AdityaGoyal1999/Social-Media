@@ -37,6 +37,13 @@ def logout_view(request):
     request.session.flush()
     return HttpResponseRedirect(reverse("index"))
 
+def all_posts_view(request):
+    user = User.objects.filter(username=request.session['username']).first()
+    # Should change this with foreign keys
+    posts = Post.objects.filter(publisher=user)
+    context = {"posts": posts}
+
+    return render(request, "network/all_posts.html", context=context)
 
 def register(request):
     if request.method == "POST":
