@@ -12,4 +12,5 @@ urlpatterns = [
     path("following", views.following, name="following"),
     path("create-post", views.create_post, name="create_post"),
     path("posts", views.posts, name="posts"),
+    path("listing/<int:page_number>", views.listing, name="listing"),
 ]

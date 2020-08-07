@@ -3,6 +3,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.core.paginator import Paginator
 
 from .models import User, Post, Follow
 
@@ -13,7 +14,10 @@ def index(request):
     posts = Post.objects.all()
     # Reverses the list according to the most recent posts
     posts = list(reversed(posts))
-    print(posts)
+
+    posts = Post.objects.all()
+    paginator = Paginator(posts, 10)
+    posts = paginator.get_page(1)
     context = {"posts": posts}
 
     return render(request, "network/index.html", context=context)
@@ -111,3 +115,12 @@ def posts(request):
     posts = Post.objects.filter(publisher=user)
     print(posts, "\n\n")
     return HttpResponse("In the shell")
+
+def listing(request, page_number):
+    posts = Post.objects.all()
+    paginator = Paginator(posts, 10) # Show 10 posts per page
+
+    # page_number = request.GET.get('page')
+    posts = paginator.get_page(page_number)
+
+    return render(request, "network/index.html", {"posts":posts,})
