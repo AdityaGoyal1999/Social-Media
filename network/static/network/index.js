@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // window.alert("Works");
+
     document.querySelectorAll(".edit").forEach(link => {
         link.onclick = function() {
             var content = this.parentElement.parentElement.querySelector(".post-content").innerHTML;
@@ -18,19 +18,21 @@ document.addEventListener("DOMContentLoaded", () => {
             button.innerHTML = "Edit post";
             button.type = "submit";
 
+            // Add text area and button to form
             form.appendChild(textArea);
             form.append(button);
 
+            // Add form to the editing post
             var exchangeDiv = elem.parentElement;
             exchangeDiv.appendChild(form)
 
             form.onsubmit = () => {
                 var newText = textArea.value;
 
-                // TODO: return value to server
                 elem.innerHTML = newText;
                 elem.style.display = 'block';
 
+                // Saving the edited text on the server-side
                 fetch(`/edit/${pk}/${newText}`)
 
                 form.style.display = 'none';

@@ -1,5 +1,4 @@
 {% extends "network/layout.html" %} {% block body %}
-<!-- Need to chanage this afterwards for login/logout -->
 <div class="container">
     <form action="{% url 'create_post' %}" method="post">
         {% csrf_token %}

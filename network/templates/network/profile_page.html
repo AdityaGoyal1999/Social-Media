@@ -13,10 +13,8 @@
             <h6>{{ followings.count }}</h6>
         </div>
     </div>
-    <!-- Follow/unfollow button and the user should not be able to follow himself -->
     {% if user.username != curr_user.username %}
     <div style="text-align: center;">
-        <!-- TODO: need to connect this -->
         {% if following %}
         <a href="{% url 'unfollow' curr_user.username %}"><button class="btn btn-primary">Unfollow</button></a> {% else %}
         <a href="{% url 'follow' curr_user.username %}"><button class="btn btn-primary">Follow</button></a> {% endif %}
