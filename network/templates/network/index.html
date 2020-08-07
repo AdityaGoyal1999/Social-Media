@@ -14,12 +14,15 @@
     </form>
 </div>
 {% endif %}
-<div class="container border rounded">
+<div class="container border rounded" id="all-posts">
     <h3>All Posts</h3>
     <div>
         {% for post in posts %}
-        <div class="container border rounded" style="margin: 10px;">
-            {{ post.publisher.username }}<br> {{ post.content }}<br> {{ post.pub_time }}<br> {{ post.likes }}
+        <div class="container border rounded post" style="margin: 10px;">
+            <b>{{ post.publisher.username }}</b><br>
+            <p class="post-content">{{ post.content }}</p>
+            <p style="margin: 0px;">{{ post.likes }}</p>
+            <p style="text-align: right; margin: 0px;">{{ post.pub_time }}</p>
         </div>
         {% empty %}
         <p>No posts</p>
