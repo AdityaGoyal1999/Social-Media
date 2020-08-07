@@ -1,11 +1,39 @@
-{% extends "network/layout.html" %} {% block body %}
-<h1>Profile</h1>
-{{ curr_user.username }} {% for follower in followers %}
-<!-- Display the number of followers also -->
-{{ follower.name }} {% empty %}
-<p>No followers</p>
-{% endfor %} {% for following in followings %}
-<!-- Display the number of followings also -->
-{{ following.name }} {% empty %}
-<p>Doesn't follow anyone</p>
-{% endfor %} {% endblock %}
+{% extends "network/layout.html" %} {% load static %} {% block import %}
+<link href="{% static 'network/profile.css' %}" rel="stylesheet"> {% endblock %} {% block body %}
+
+<div class="container border rounded" id="profile-info">
+    <h3 style="text-align: center;">{{ user.username|upper }}</h3>
+    <div class="row" style="text-align: center;">
+        <div class="col-md-6">
+            <h4>Followers</h4>
+            <h6>{{ followers.count }}</h6>
+        </div>
+        <div class="col-md-6">
+            <h4>Following</h4>
+            <h6>{{ followings.count }}</h6>
+        </div>
+    </div>
+    <!-- Follow/unfollow button and the user should not be able to follow himself -->
+    <div style="text-align: center;">
+        <!-- TODO: need to connect this -->
+        <button class="btn btn-primary">Follow / Unfollow</button>
+    </div>
+</div>
+
+<div class="container border rounded" id="user-posts">
+    <h3>Posts by You</h3>
+    <div>
+        {% for post in posts %}
+        <div class="container border rounded post" style="margin: 10px;">
+            <b>{{ post.publisher.username }}</b><br>
+            <p class="post-content">{{ post.content }}</p>
+            <p style="margin: 0px;">{{ post.likes }}</p>
+            <p style="text-align: right; margin: 0px;">{{ post.pub_time }}</p>
+        </div>
+        {% empty %}
+        <h6 style="text-align: center;">No posts</h6>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

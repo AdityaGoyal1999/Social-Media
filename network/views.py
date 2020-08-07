@@ -48,11 +48,12 @@ def logout_view(request):
 def profile(request, name):
 
     user = User.objects.filter(username=name).first()
+
     followers = Follow.objects.filter(followee=user)
-    
     follows = Follow.objects.filter(follower=user)
 
-    return render(request, "network/profile_page.html", {"curr_user": user, "followers": followers, "followings": follows,})
+    posts = Post.objects.filter(publisher=user)
+    return render(request, "network/profile_page.html", {"followers": followers, "followings": follows, "posts": posts})
 
 
 def register(request):
