@@ -8,7 +8,15 @@ from .models import User, Post, Follow
 
 
 def index(request):
-    return render(request, "network/index.html")
+
+    # TODO: reverse the list
+    posts = Post.objects.all()
+    # Reverses the list according to the most recent posts
+    posts = list(reversed(posts))
+    print(posts)
+    context = {"posts": posts}
+
+    return render(request, "network/index.html", context=context)
 
 
 def login_view(request):
@@ -46,14 +54,6 @@ def profile(request, name):
 
     return render(request, "network/profile_page.html", {"curr_user": user, "followers": followers, "followings": follows,})
 
-def all_posts_view(request):
-    user = User.objects.filter(username=request.session['username']).first()
-    # TODO: reverse the list
-    posts = Post.objects.all()
-    posts = posts.reverse()
-    context = {"posts": posts}
-
-    return render(request, "network/all_posts.html", context=context)
 
 def register(request):
     if request.method == "POST":
@@ -101,7 +101,7 @@ def create_post(request):
     user = User.objects.filter(username=request.session['username']).first()
     post = Post.objects.create(content=content, publisher=user)
 
-    return HttpResponse("Your post has been created")
+    return HttpResponseRedirect(reverse("index"))
 
 
 def posts(request):
