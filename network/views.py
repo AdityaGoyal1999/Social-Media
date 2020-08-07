@@ -51,13 +51,21 @@ def logout_view(request):
 
 def profile(request, name):
 
+    curr_user = User.objects.filter(username=request.session['username']).first()
     user = User.objects.filter(username=name).first()
 
     followers = Follow.objects.filter(followee=user)
     follows = Follow.objects.filter(follower=user)
+    
+    follow_connection = Follow.objects.filter(follower=curr_user, followee=user).first()
+    # print(follow_connection, "\n\n\n\n\n")
+    if follow_connection is None:
+        following = False
+    else:
+        following = True
 
     posts = Post.objects.filter(publisher=user)
-    return render(request, "network/profile_page.html", {"followers": followers, "followings": follows, "posts": posts})
+    return render(request, "network/profile_page.html", {"followers": followers, "followings": follows, "posts": posts, "curr_user": user, "following": following,})
 
 
 def register(request):
@@ -93,12 +101,18 @@ def following(request):
     follows = Follow.objects.filter(follower=user)
     posts = Post.objects.all()
 
+    users_follows = []
+    for follow in follows:
+        users_follows.append(follow.followee)
+
     follows_posts_list = []
     for p in posts:
-        if p.publisher in follows:
+        if p.publisher in users_follows:
             follows_posts_list.append(p)
 
-    return render(request, "network/following.html", {"posts": follows_posts_list,})
+    all_users = User.objects.all()
+
+    return render(request, "network/following.html", {"posts": follows_posts_list, "users": all_users,})
 
 def create_post(request):
     content = request.POST['content']
@@ -113,7 +127,7 @@ def posts(request):
     user = User.objects.filter(username=request.session['username']).first()
     # Should change this with foreign keys
     posts = Post.objects.filter(publisher=user)
-    print(posts, "\n\n")
+    # print(posts, "\n\n")
     return HttpResponse("In the shell")
 
 def listing(request, page_number):
@@ -145,3 +159,55 @@ def like(request, pk):
     post.save()
 
     return HttpResponse("Edited")
+
+
+def follow(request, name):
+    
+    # print(name)
+    follower = User.objects.filter(username=request.session['username']).first()
+    followee = User.objects.filter(username=name).first()
+
+    follow = Follow.objects.create(follower=follower, followee=followee)
+
+    # user = User.objects.filter(username=request.session['username']).first() Follower
+    follows = Follow.objects.filter(follower=follower)
+
+    users_follows = []
+    for follow in follows:
+        users_follows.append(follow.followee)
+
+    posts = Post.objects.all()
+
+    follows_posts_list = []
+    for p in posts:
+        if p.publisher in users_follows:
+            follows_posts_list.append(p)
+
+    all_users = User.objects.all()
+
+    return render(request, "network/following.html", {"posts": follows_posts_list, "users": all_users, "message": "Following the user.",})
+
+
+def unfollow(request, name):
+    # pass
+    follower = User.objects.filter(username=request.session['username']).first()
+    followee = User.objects.filter(username=name).first()
+
+    delete_follow = Follow.objects.filter(follower=follower, followee=followee).delete()
+    # delete_follow.save()
+    follows = Follow.objects.filter(follower=follower)
+
+    users_follows = []
+    for follow in follows:
+        users_follows.append(follow.followee)
+
+    posts = Post.objects.all()
+
+    follows_posts_list = []
+    for p in posts:
+        if p.publisher in users_follows:
+            follows_posts_list.append(p)
+
+    all_users = User.objects.all()
+
+    return render(request, "network/following.html", {"posts": follows_posts_list, "users": all_users, "message": "Unfollowed the user.",})

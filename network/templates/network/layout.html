@@ -12,8 +12,7 @@
 
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="{% url 'index' %}">Network</a>
-
+        <a class="navbar-brand" href="{% url 'index' %}">Social Network</a>
         <div>
             <ul class="navbar-nav mr-auto">
                 {% if user.is_authenticated %}
@@ -41,7 +40,9 @@
             </ul>
         </div>
     </nav>
-
+    <div class="container">
+        {{ message }}
+    </div>
     <div class="body">
         {% block body %} {% endblock %}
     </div>

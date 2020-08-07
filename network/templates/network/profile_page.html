@@ -2,7 +2,7 @@
 <link href="{% static 'network/profile.css' %}" rel="stylesheet"> {% endblock %} {% block body %}
 
 <div class="container border rounded" id="profile-info">
-    <h3 style="text-align: center;">{{ user.username|upper }}</h3>
+    <h3 style="text-align: center;">{{ curr_user.username|upper }}</h3>
     <div class="row" style="text-align: center;">
         <div class="col-md-6">
             <h4>Followers</h4>
@@ -14,10 +14,14 @@
         </div>
     </div>
     <!-- Follow/unfollow button and the user should not be able to follow himself -->
+    {% if user.username != curr_user.username %}
     <div style="text-align: center;">
         <!-- TODO: need to connect this -->
-        <button class="btn btn-primary">Follow / Unfollow</button>
+        {% if following %}
+        <a href="{% url 'unfollow' curr_user.username %}"><button class="btn btn-primary">Unfollow</button></a> {% else %}
+        <a href="{% url 'follow' curr_user.username %}"><button class="btn btn-primary">Follow</button></a> {% endif %}
     </div>
+    {% endif %}
 </div>
 
 <div class="container border rounded" id="user-posts">

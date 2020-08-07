@@ -15,4 +15,20 @@
         {% endfor %}
     </div>
 </div>
+<div class="container border rounded" id="following-posts">
+    <h3>All User</h3>
+    <div>
+        {% for user in users %}
+
+        <div class="container border rounded" style="padding: 10px; margin: 5px;">
+            <a href="{% url 'profile' user.username %}">{{ user.username }}</a>
+            <!-- <div style="text-align: right;">
+                <button class="btn btn-primary">Follow/Unfollow</button>
+            </div> -->
+        </div>
+        {% empty %}
+        <h6 style="text-align: center;">No users</h6>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}
