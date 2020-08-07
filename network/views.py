@@ -39,8 +39,9 @@ def logout_view(request):
 
 def all_posts_view(request):
     user = User.objects.filter(username=request.session['username']).first()
-    # Should change this with foreign keys
-    posts = Post.objects.filter(publisher=user)
+    # TODO: reverse the list
+    posts = Post.objects.all()
+    posts = posts.reverse()
     context = {"posts": posts}
 
     return render(request, "network/all_posts.html", context=context)
