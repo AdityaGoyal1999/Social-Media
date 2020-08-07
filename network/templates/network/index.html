@@ -1,5 +1,8 @@
 {% extends "network/layout.html" %} {% load static %} {% block import %}
-<link href="{% static 'network/index.css' %}" rel="stylesheet"> {% endblock %} {% block body %}
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link href="{% static 'network/index.css' %}" rel="stylesheet">
+<script src="{% static 'network/index.js' %}"></script>
+{% endblock %} {% block body %}
 <!-- Need to chanage this afterwards for login/logout -->
 {% if user.is_authenticated %}
 <div class="container border rounded" id="create-post">
@@ -20,9 +23,19 @@
         {% for post in posts %}
         <div class="container border rounded post" style="margin: 10px;">
             <b>{{ post.publisher.username }}</b><br>
-            <p class="post-content">{{ post.content }}</p>
+            <div class="text-content">
+                <p class="post-content" id="{{ post.pk }}">{{ post.content }}</p>
+            </div>
             <p style="margin: 0px;">{{ post.likes }}</p>
             <p style="text-align: right; margin: 0px;">{{ post.pub_time }}</p>
+            {% if user.username == post.publisher.username %}
+            <div style="text-align: right;">
+                <a href="#" class="edit">
+                    <small class="form-text text-muted">edit</small>
+                    <i class="material-icons">create</i>
+                </a>
+            </div>
+            {% endif %}
         </div>
         {% empty %}
         <h6 style="text-align: center;">No posts</h6>

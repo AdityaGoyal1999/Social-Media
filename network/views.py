@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.urls import reverse
 from django.core.paginator import Paginator
@@ -124,3 +124,16 @@ def listing(request, page_number):
     posts = paginator.get_page(page_number)
 
     return render(request, "network/index.html", {"posts":posts,})
+
+def edit_post(request, pk, content):
+
+    post = Post.objects.get(pk=pk)
+
+    # Securing the editing process
+    if post.publisher.username == request.session['username']:
+        post.content = content
+        post.save()
+    else:
+        raise Http404("Cannot edit someone else's post")
+
+    return HttpResponse(post.content)
