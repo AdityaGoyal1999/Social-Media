@@ -8,11 +8,11 @@ from django.core.paginator import Paginator
 from .models import User, Post, Follow
 
 
+# The main page that contains all the posts
 def index(request):
 
-    # TODO: reverse the list
     posts = Post.objects.all()
-    # Reverses the list according to the most recent posts
+
     posts = list(reversed(posts))
 
     posts = Post.objects.all()
@@ -23,7 +23,9 @@ def index(request):
     return render(request, "network/index.html", context=context)
 
 
+# Present the login page
 def login_view(request):
+
     if request.method == "POST":
 
         # Attempt to sign user in
@@ -34,6 +36,7 @@ def login_view(request):
         # Check if authentication successful
         if user is not None:
             login(request, user)
+            # Keep track of username
             request.session['username'] = username
             return HttpResponseRedirect(reverse("index"))
         else:
@@ -44,11 +47,15 @@ def login_view(request):
         return render(request, "network/login.html")
 
 
+# Log the user out
 def logout_view(request):
+
     logout(request)
     request.session.flush()
     return HttpResponseRedirect(reverse("index"))
 
+
+# Shows the profile page of a given user
 def profile(request, name):
 
     curr_user = User.objects.filter(username=request.session['username']).first()
@@ -58,7 +65,6 @@ def profile(request, name):
     follows = Follow.objects.filter(follower=user)
     
     follow_connection = Follow.objects.filter(follower=curr_user, followee=user).first()
-    # print(follow_connection, "\n\n\n\n\n")
     if follow_connection is None:
         following = False
     else:
@@ -68,7 +74,9 @@ def profile(request, name):
     return render(request, "network/profile_page.html", {"followers": followers, "followings": follows, "posts": posts, "curr_user": user, "following": following,})
 
 
+# Register a new user
 def register(request):
+
     if request.method == "POST":
         username = request.POST["username"]
         email = request.POST["email"]
@@ -95,6 +103,8 @@ def register(request):
     else:
         return render(request, "network/register.html")
 
+
+# Shows the posts of the users following
 def following(request):
 
     user = User.objects.filter(username=request.session['username']).first()
@@ -114,7 +124,10 @@ def following(request):
 
     return render(request, "network/following.html", {"posts": follows_posts_list, "users": all_users,})
 
+
+# Create a new post
 def create_post(request):
+
     content = request.POST['content']
 
     user = User.objects.filter(username=request.session['username']).first()
@@ -123,22 +136,18 @@ def create_post(request):
     return HttpResponseRedirect(reverse("index"))
 
 
-def posts(request):
-    user = User.objects.filter(username=request.session['username']).first()
-    # Should change this with foreign keys
-    posts = Post.objects.filter(publisher=user)
-    # print(posts, "\n\n")
-    return HttpResponse("In the shell")
-
+# Designed for the paginator class for Django
 def listing(request, page_number):
+
     posts = Post.objects.all()
     paginator = Paginator(posts, 10) # Show 10 posts per page
 
-    # page_number = request.GET.get('page')
     posts = paginator.get_page(page_number)
 
     return render(request, "network/index.html", {"posts":posts,})
 
+
+# Edit a post
 def edit_post(request, pk, content):
 
     post = Post.objects.get(pk=pk)
@@ -152,6 +161,8 @@ def edit_post(request, pk, content):
 
     return HttpResponse(post.content)
 
+
+# Like a post
 def like(request, pk):
 
     post = Post.objects.get(pk=pk)
@@ -161,15 +172,14 @@ def like(request, pk):
     return HttpResponse("Edited")
 
 
+# Follow a given user
 def follow(request, name):
     
-    # print(name)
     follower = User.objects.filter(username=request.session['username']).first()
     followee = User.objects.filter(username=name).first()
 
     follow = Follow.objects.create(follower=follower, followee=followee)
 
-    # user = User.objects.filter(username=request.session['username']).first() Follower
     follows = Follow.objects.filter(follower=follower)
 
     users_follows = []
@@ -188,13 +198,13 @@ def follow(request, name):
     return render(request, "network/following.html", {"posts": follows_posts_list, "users": all_users, "message": "Following the user.",})
 
 
+# Unfollow a given user
 def unfollow(request, name):
-    # pass
+    
     follower = User.objects.filter(username=request.session['username']).first()
     followee = User.objects.filter(username=name).first()
 
     delete_follow = Follow.objects.filter(follower=follower, followee=followee).delete()
-    # delete_follow.save()
     follows = Follow.objects.filter(follower=follower)
 
     users_follows = []
