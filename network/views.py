@@ -137,3 +137,11 @@ def edit_post(request, pk, content):
         raise Http404("Cannot edit someone else's post")
 
     return HttpResponse(post.content)
+
+def like(request, pk):
+
+    post = Post.objects.get(pk=pk)
+    post.likes += 1
+    post.save()
+
+    return HttpResponse("Edited")

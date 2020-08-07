@@ -26,7 +26,7 @@
             <div class="text-content">
                 <p class="post-content" id="{{ post.pk }}">{{ post.content }}</p>
             </div>
-            <p style="margin: 0px;">{{ post.likes }}</p>
+            <p style="margin: 0px;"><span class="number-of-likes">{{ post.likes }}</span> <a href="#" class="like">👍</a> <a href="#">👎</a> </p>
             <p style="text-align: right; margin: 0px;">{{ post.pub_time }}</p>
             {% if user.username == post.publisher.username %}
             <div style="text-align: right;">
