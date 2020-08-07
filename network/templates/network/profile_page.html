@@ -1,0 +1,11 @@
+{% extends "network/layout.html" %} {% block body %}
+<h1>Profile</h1>
+{{ curr_user.username }} {% for follower in followers %}
+<!-- Display the number of followers also -->
+{{ follower.name }} {% empty %}
+<p>No followers</p>
+{% endfor %} {% for following in followings %}
+<!-- Display the number of followings also -->
+{{ following.name }} {% empty %}
+<p>Doesn't follow anyone</p>
+{% endfor %} {% endblock %}

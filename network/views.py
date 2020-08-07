@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Post
+from .models import User, Post, Follow
 
 
 def index(request):
@@ -36,6 +36,15 @@ def logout_view(request):
     logout(request)
     request.session.flush()
     return HttpResponseRedirect(reverse("index"))
+
+def profile(request, name):
+
+    user = User.objects.filter(username=name).first()
+    followers = Follow.objects.filter(followee=user)
+    
+    follows = Follow.objects.filter(follower=user)
+
+    return render(request, "network/profile_page.html", {"curr_user": user, "followers": followers, "followings": follows,})
 
 def all_posts_view(request):
     user = User.objects.filter(username=request.session['username']).first()
@@ -73,6 +82,18 @@ def register(request):
     else:
         return render(request, "network/register.html")
 
+def following(request):
+
+    user = User.objects.filter(username=request.session['username']).first()
+    follows = Follow.objects.filter(follower=user)
+    posts = Post.objects.all()
+
+    follows_posts_list = []
+    for p in posts:
+        if p.publisher in follows:
+            follows_posts_list.append(p)
+
+    return render(request, "network/following.html", {"posts": follows_posts_list,})
 
 def create_post(request):
     content = request.POST['content']

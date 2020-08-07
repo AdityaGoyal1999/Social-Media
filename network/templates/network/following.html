@@ -1,0 +1,7 @@
+{% extends "network/layout.html" %} {% block body %}
+<h1>Following these people</h1>
+{% for post in posts %}
+<div class="container" style="background-color: aqua; margin: 10px;">
+    {{ post.publisher.username }}<br> {{ post.content }}<br> {{ post.pub_time }}<br> {{ post.likes }}
+</div>
+{% empty %} No posts {% endfor %} {% endblock %}
