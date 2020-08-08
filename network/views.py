@@ -14,8 +14,6 @@ def index(request):
     posts = Post.objects.all()
 
     posts = list(reversed(posts))
-
-    posts = Post.objects.all()
     paginator = Paginator(posts, 10)
     posts = paginator.get_page(1)
     context = {"posts": posts}
@@ -71,6 +69,10 @@ def profile(request, name):
         following = True
 
     posts = Post.objects.filter(publisher=user)
+    posts = list(reversed(posts))
+    paginator = Paginator(posts, 10)
+    posts = paginator.get_page(1)
+
     return render(request, "network/profile_page.html", {"followers": followers, "followings": follows, "posts": posts, "curr_user": user, "following": following,})
 
 
@@ -110,6 +112,7 @@ def following(request):
     user = User.objects.filter(username=request.session['username']).first()
     follows = Follow.objects.filter(follower=user)
     posts = Post.objects.all()
+    posts = list(reversed(posts))
 
     users_follows = []
     for follow in follows:
@@ -121,8 +124,10 @@ def following(request):
             follows_posts_list.append(p)
 
     all_users = User.objects.all()
+    paginator = Paginator(follows_posts_list, 10)
+    posts = paginator.get_page(1)
 
-    return render(request, "network/following.html", {"posts": follows_posts_list, "users": all_users,})
+    return render(request, "network/following.html", {"posts": posts, "users": all_users,})
 
 
 # Create a new post
@@ -134,17 +139,66 @@ def create_post(request):
     post = Post.objects.create(content=content, publisher=user)
 
     return HttpResponseRedirect(reverse("index"))
+    
 
 
 # Designed for the paginator class for Django
 def listing(request, page_number):
 
     posts = Post.objects.all()
+    posts = list(reversed(posts))
     paginator = Paginator(posts, 10) # Show 10 posts per page
 
     posts = paginator.get_page(page_number)
 
     return render(request, "network/index.html", {"posts":posts,})
+
+
+# Designed for the paginator class for Django
+def listing_profile(request, page_number):
+
+    curr_user = User.objects.filter(username=request.session['username']).first()
+    user = User.objects.filter(username=name).first()
+
+    followers = Follow.objects.filter(followee=user)
+    follows = Follow.objects.filter(follower=user)
+    
+    follow_connection = Follow.objects.filter(follower=curr_user, followee=user).first()
+    if follow_connection is None:
+        following = False
+    else:
+        following = True
+
+    posts = Post.objects.filter(publisher=user)
+    posts = list(reversed(posts))
+    paginator = Paginator(posts, 10)
+    posts = paginator.get_page(page_number)
+
+    return render(request, "network/profile_page.html", {"followers": followers, "followings": follows, "posts": posts, "curr_user": user, "following": following,})
+
+
+def listing_following(request, page_number):
+
+    user = User.objects.filter(username=request.session['username']).first()
+    follows = Follow.objects.filter(follower=user)
+    posts = Post.objects.all()
+
+    users_follows = []
+    for follow in follows:
+        users_follows.append(follow.followee)
+
+    follows_posts_list = []
+    for p in posts:
+        if p.publisher in users_follows:
+            follows_posts_list.append(p)
+
+    all_users = User.objects.all()
+    posts = list(reversed(posts))
+    paginator = Paginator(follows_posts_list, 10)
+    posts = paginator.get_page(page_number)
+
+    return render(request, "network/following.html", {"posts": posts, "users": all_users,})
+
 
 
 # Edit a post
@@ -187,6 +241,7 @@ def follow(request, name):
         users_follows.append(follow.followee)
 
     posts = Post.objects.all()
+    posts = list(reversed(posts))
 
     follows_posts_list = []
     for p in posts:
@@ -212,6 +267,7 @@ def unfollow(request, name):
         users_follows.append(follow.followee)
 
     posts = Post.objects.all()
+    posts = list(reversed(posts))
 
     follows_posts_list = []
     for p in posts:

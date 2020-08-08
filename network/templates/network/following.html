@@ -1,19 +1,40 @@
 {% extends "network/layout.html" %} {% load static %} {% block import %}
-<link href="{% static 'network/following.css' %}" rel="stylesheet"> {% endblock %} {% block body %}
+<link href="{% static 'network/following.css' %}" rel="stylesheet">
+<script src="{% static 'network/following.js' %}"></script>
+{% endblock %} {% block body %}
 <div class="container border rounded" id="following-posts">
-    <h3>All Posts</h3>
+    <h3>Following</h3>
     <div>
         {% for post in posts %}
         <div class="container border rounded post" style="margin: 10px;">
             <b>{{ post.publisher.username }}</b><br>
             <p class="post-content">{{ post.content }}</p>
-            <p style="margin: 0px;">{{ post.likes }}</p>
+            <p style="margin: 0px;"><span class="number-of-likes">{{ post.likes }}</span> <a href="#" class="like">👍</a> <a href="#">👎</a></p>
             <p style="text-align: right; margin: 0px;">{{ post.pub_time }}</p>
         </div>
         {% empty %}
         <h6 style="text-align: center;">No posts</h6>
         {% endfor %}
     </div>
+    <!-- Paginator -->
+    {% if posts is not None %}
+    <div class="current">
+        <p style="text-align: center;">Page {{ posts.number }} of {{ posts.paginator.num_pages }}</p>
+    </div>
+    <div>
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                {% if posts.has_previous %}
+                <li class="page-item"><a class="page-link" href="{% url 'listing-following' 1 %}">&laquo; first</a></li>
+                <li class="page-item"><a class="page-link" href="{% url 'listing-following' posts.previous_page_number %}">previous</a></li>
+                {% endif %} {% if posts.has_next %}
+                <li class="page-item"><a class="page-link" href="{% url 'listing-following' posts.next_page_number %}">next</a></li>
+                <li class="page-item"><a class="page-link" href="{% url 'listing-following' posts.paginator.num_pages %}">last &raquo;</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
 </div>
 <div class="container border rounded" id="following-posts">
     <h3>All User</h3>
